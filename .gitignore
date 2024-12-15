@@ -92,3 +92,4 @@ target/
 .tmp.drivedownload/
 .tmp.driveupload/
 
+/run_information.json
