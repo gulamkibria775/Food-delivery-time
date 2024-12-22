@@ -23,7 +23,8 @@ jobs:
 
       - name: DVC Pull
         run: |
-          dvc pull -o C:/Users/ASUS/AppData/Local/Temp
+          # dvc pull -o C:/Users/ASUS/AppData/Local/Temp
+          dvc pull 
 
       - name: Test Model Registry
         env:
@@ -42,7 +43,7 @@ jobs:
         env:
           DAGSHUB_USER_TOKEN: 46181ab04c2c395b53849548f187fa7176ac177b
         run: |
-          python .scripts/promote_model_to_prod.py --data-path=C:/Users/ASUS/AppData/Local/Temp
+          python ./scripts/promote_model_to_prod.py --data-path=C:/Users/ASUS/AppData/Local/Temp
 
 # -------------------------------
 # name: CI-CD
