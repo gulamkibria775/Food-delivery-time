@@ -4,7 +4,7 @@ import requests
 from pathlib import Path
 import pytest
 
-# path for data
+# path for datan pijnt
 root_path = Path(__file__).parent.parent
 data_path = root_path / "data" / "raw" / "swiggy.csv"
 
