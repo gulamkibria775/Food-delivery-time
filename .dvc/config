@@ -1,4 +1,4 @@
 [core]
     remote = myremote
 ['remote "myremote"']
-    url = C:\Users\ASUS\AppData\Local\Temp
+    url = https://dagshub.com/gulamkibria775/Food-delivery-time.dvc
