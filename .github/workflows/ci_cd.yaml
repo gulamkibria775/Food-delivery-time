@@ -1,4 +1,5 @@
 
+
 name: CI-CD
 
 on: push
@@ -14,192 +15,47 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip' 
+          cache: 'pip'
 
       - name: Install Packages
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
+     
+      - name: Configure DVC Remote (DAGSHUB)
+        run: |
+          dvc remote add -d myremote https://dagshub.com/gulamkibria775/Food-delivery-time.dvc
+          dvc remote modify --local myremote auth basic
+          dvc remote modify --local myremote user gulamkibria775
+          dvc remote modify --local myremote password 46181ab04c2c395b53849548f187fa7176ac177b
+
+          
+      # Set local data path (adjust path for GitHub Actions runner)
+      # - name: Set Local Data Path
+      #   run: echo "DATA_PATH=/tmp" >> $GITHUB_ENV  # Adjust path for GitHub Actions runner
+
+      # Pull data with DVC
       - name: DVC Pull
         run: |
-          # dvc pull -o C:/Users/ASUS/AppData/Local/Temp
-          dvc pull 
+          dvc pull  
 
       - name: Test Model Registry
         env:
           DAGSHUB_USER_TOKEN: 46181ab04c2c395b53849548f187fa7176ac177b
         run: |
-          pytest ./tests/test_model_registry.py --data-path=C:/Users/ASUS/AppData/Local/Temp
+          pytest tests/test_model_registry.py
 
       - name: Test Model Performance
         env:
           DAGSHUB_USER_TOKEN: 46181ab04c2c395b53849548f187fa7176ac177b
         run: |
-          pytest ./tests/test_model_perf.py --data-path=C:/Users/ASUS/AppData/Local/Temp
+          pytest tests/test_model_perf.py
 
       - name: Promote Model
         if: success()
         env:
           DAGSHUB_USER_TOKEN: 46181ab04c2c395b53849548f187fa7176ac177b
         run: |
-          python ./scripts/promote_model_to_prod.py --data-path=C:/Users/ASUS/AppData/Local/Temp
+          python scripts/promote_model_to_prod.py
 
-# -------------------------------
-# name: CI-CD
-
-# on: push
-
-# jobs:
-#   CI-CD:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Code Checkout
-#         uses: actions/checkout@v4
-
-#       - name: Setup Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: '3.11'
-#           cache: 'pip' 
-
-#       - name: Install Packages
-#         run: |
-#           python -m pip install --upgrade pip
-#           pip install -r requirements-dev.txt
-
-#       # - name: Configure AWS Credentials
-#       #   uses: aws-actions/configure-aws-credentials@v4
-#       #   with:
-#       #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#       #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#       #     aws-region: ap-south-1
-#       - name: Set Local Data Path
-#         run: echo "DATA_PATH=C:/Users/ASUS/AppData/Local/Temp" >> $GITHUB_ENV
-
-#       - name: DVC Pull
-#         run: |
-#           dvc pull
-
-#       - name: Test Model Registry
-#         env:
-#           # DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-#           DAGSHUB_USER_TOKEN: 46181ab04c2c395b53849548f187fa7176ac177b
-#         run: |
-#           pytest tests/test_model_registry.py
-
-#       - name: Test Model Performance
-#         env:
-#           # DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-#           DAGSHUB_USER_TOKEN: 46181ab04c2c395b53849548f187fa7176ac177b
-#         run: |
-#           pytest tests/test_model_perf.py
-
-#       - name: Promote Model
-#         if: success()
-#         # env:
-#         #   DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-#           DAGSHUB_USER_TOKEN: 46181ab04c2c395b53849548f187fa7176ac177b
-#         run: |
-#           python scripts/promote_model_to_prod.py
-          
-
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: ap-south-1
-     
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v2
-
-  
-      # - name: Build, tag, and push docker image to Amazon ECR
-      #   env:
-      #     REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     REPOSITORY: ${{ secrets.ECR_REPOSITORY_URI }}
-      #     IMAGE_TAG: latest
-      #   run: |
-      #     docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-      #     docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-
-      
-      # # Zip the required files
-      # - name: Zip files for deployment
-      #   if: success()
-      #   run: |
-      #       zip -r deployment.zip appspec.yml deploy/scripts/install_dependencies.sh deploy/scripts/start_docker.sh
-
-
-      # # Upload the ZIP file to S3
-      # - name: Upload ZIP to S3
-      #   if: success()
-      #   run: |
-      #       aws s3 cp deployment.zip s3://deliverytimepredictiondeployment/deployment.zip
-
-            
-      # # Deploy to AWS CodeDeploy using the uploaded ZIP file
-      # - name: Deploy to AWS CodeDeploy
-      #   if: success()
-      #   run: |
-      #       aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #       aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #       aws deploy create-deployment \
-      #       --application-name deliverytimeprediction \
-      #       --deployment-config-name CodeDeployDefault.OneAtATime \
-      #       --deployment-group-name deliverytimepredictiondeploymentgroup \
-      #       --s3-location bucket=deliverytimepredictiondeployment,key=deployment.zip,bundleType=zip \
-      #       --file-exists-behavior OVERWRITE \
-      #       --region ap-south-1
-
-
-# -----------------------------------------------------------------
-# name: CI-CD
-
-# on: push
-
-# jobs:
-#   CI-CD:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Code Checkout
-#         uses: actions/checkout@v4
-
-#       - name: Setup Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: '3.11'
-#           cache: 'pip' 
-
-#       - name: Install Packages
-#         run: |
-#           python -m pip install --upgrade pip
-#           pip install -r requirements-dev.txt
-
-#       - name: Access Local Data
-#         run: |
-#           # Ensure the local data folder is available
-#           if [ ! -d "./data" ]; then
-#             echo "Local data directory not found!"
-#             exit 1
-#           fi
-#           ls -la ./data
-
-#       - name: Run Tests
-#         env:
-#           DATA_PATH: ./data  # Set local data path as an environment variable
-#         run: |
-#           pytest tests/test_model_registry.py
-#           pytest tests/test_model_perf.py
-
-#       - name: Promote Model
-#         if: success()
-#         env:
-#           DATA_PATH: ./data
-#         run: |
-#           python scripts/promote_model_to_prod.py
-
-
-  
