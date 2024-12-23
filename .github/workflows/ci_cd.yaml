@@ -32,8 +32,8 @@ jobs:
 
           
       # Set local data path (adjust path for GitHub Actions runner)
-      # - name: Set Local Data Path
-      #   run: echo "DATA_PATH=/tmp" >> $GITHUB_ENV  # Adjust path for GitHub Actions runner
+      - name: Set Local Data Path
+        run: echo "DATA_PATH=/tmp" >> $GITHUB_ENV  # Adjust path for GitHub Actions runner
 
       # Pull data with DVC
       - name: DVC Pull
