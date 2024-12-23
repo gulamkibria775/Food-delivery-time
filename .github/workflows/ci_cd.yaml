@@ -23,12 +23,12 @@ jobs:
           pip install -r requirements-dev.txt
 
      
-      - name: Configure DVC Remote (DAGSHUB)
-        run: |
-          dvc remote add -d myremote https://dagshub.com/gulamkibria775/Food-delivery-time.dvc
-          dvc remote modify --local myremote auth basic
-          dvc remote modify --local myremote user gulamkibria775
-          dvc remote modify --local myremote password 46181ab04c2c395b53849548f187fa7176ac177b
+      # - name: Configure DVC Remote (DAGSHUB)
+      #   run: |
+      #     dvc remote add -d myremote https://dagshub.com/gulamkibria775/Food-delivery-time.dvc
+      #     dvc remote modify --local myremote auth basic
+      #     dvc remote modify --local myremote user gulamkibria775
+      #     dvc remote modify --local myremote password 46181ab04c2c395b53849548f187fa7176ac177b
 
           
       # Set local data path (adjust path for GitHub Actions runner)
